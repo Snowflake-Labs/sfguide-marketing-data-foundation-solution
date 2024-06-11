@@ -1,0 +1,3 @@
+PROVIDER_ID,CONNECTOR_ID,DEFAULT_SCHEMA,CONNECTOR_URL
+1,1,facebook_ads,https://fivetran.com/docs/connectors/applications/facebook-ads/setup-guide
+2,2,linkedin_ads,https://app.snowflake.com/marketplace/listing/GZSUZ59IJT/omnata-omnata-sync-engine

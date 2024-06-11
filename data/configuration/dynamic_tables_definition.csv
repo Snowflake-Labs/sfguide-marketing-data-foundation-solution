@@ -1,0 +1,5 @@
+NAME,COLUMNS
+DIM_ACCOUNT," account_id INTEGER , account_name VARCHAR , account_status VARCHAR , business_country_code VARCHAR , currency_key VARCHAR , timezone_key VARCHAR , created_at TIMESTAMP_NTZ , updated_at TIMESTAMP_NTZ , status VARCHAR"
+DIM_CAMPAIGN,"id INTEGER ,campaign_name VARCHAR ,account_id INTEGER ,date_start TIMESTAMP_NTZ ,date_end TIMESTAMP_NTZ ,status VARCHAR ,daily_budget INTEGER ,lifetime_budget INTEGER ,budget_remaining INTEGER,created_at TIMESTAMP_NTZ ,updated_at TIMESTAMP_NTZ"
+DIM_AD_GROUP,"id INTEGER,ad_group_name VARCHAR,campaign_id INTEGER,account_id INTEGER,created_at TIMESTAMP_NTZ,updated_at TIMESTAMP_NTZ"
+METRICS,"ad_id INTEGER ,date TIMESTAMP_NTZ ,timezone VARCHAR ,geography_object VARCHAR ,platform_id INTEGER ,account_id INTEGER ,campaign_id INTEGER ,ad_group_id INTEGER ,keyword_id INTEGER ,label_id INTEGER ,currency_key VARCHAR ,impressions INTEGER ,clicks INTEGER ,spend FLOAT "

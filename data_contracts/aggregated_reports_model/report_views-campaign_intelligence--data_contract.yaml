@@ -1,0 +1,150 @@
+### Data Contract Overview
+data_contract_overview: &overview_section
+  id: &report_views-campaign_intelligence--data_contract:v0.1.1:b009861b-ea4c-4d3f-8920-644eceabf025
+      #ID anchor is formed by concatenating id_name:version:uuid
+    id_name: report_views-campaign_intelligence--data_contract
+    uuid: b009861b-ea4c-4d3f-8920-644eceabf025
+  info:
+    title: Campaign Intelligence - Report Views - Data Contract
+    type: data_contract
+    format: YAML
+    version: 0.1.1
+    date_created: April 25, 2024
+    date_last_updated: April 28, 2024
+    status: draft
+    description: >
+      This data contract defines the standard for expressing combined campaign intelligence report views across paid and owned channels.
+      include: common_entities-campaign_intelligence--datacontract::data_contract_overview:description
+    use_case: Marketing -> Marketing Intelligence Platform -> Campaign Intelligence
+    related_entities:
+      upstream_entities:
+        data_contracts:
+          - campaign-intelligence-combined-sources::data-contract
+        transformations:
+        - [tbd]
+      downstream_entities:
+        transformations:
+          - [tbd]
+        data_contracts:
+          - tbd
+    ownership:
+      owner: Marketing Data Cloud Team
+      contact:
+          owner: Data Standards Team for the Snowflake Marketing Data Cloud
+          email: data-standards-mdc-DL@snowflake.com
+
+  #### Table of Contents
+    table_of_contents:
+    - - *overview_section
+      - *terms_section
+    - - *logical_models_section
+      - - *objects_section
+        - *enums_section
+    - - *data_quality_section
+    - #Sample Sections
+      - - *sample_physical_schema_section
+        - *sample_data_section
+        - *sample_questions_and_analyses_section
+
+### Terms
+terms: &terms_section
+    # All Terms from common_entities-campaign_intelligence--datacontract are included here.
+    include: common_entities-campaign_intelligence--datacontract::terms
+
+### Logical_Models
+logical_models:
+  #### Objects
+  objects: &objects_section
+    # All Objects from common_entities-campaign_intelligence--datacontract are included here.
+      # Objects list: &date_object, &timestamp_object, &timezone_object, &geography_object, &currency_object
+    include: common_entities-campaign_intelligence--datacontract::logical_models:objects
+
+
+  ### Enums
+  enums: &enums_section
+    # All enums from common_entities-campaign_intelligence--datacontract are included here.
+      # Enums list: &platform_dimension:platform_id, &platform_dimension:platform_name, 
+      &campaign_dimension:campaign_status, &campaign_dimension:ad_group_status, 
+      &ad_dimension:ad_type, &ad_dimension:ad_status, &label_dimension:campaign_object_type
+    include: common_entities-campaign_intelligence--datacontract::logical_models:enums
+
+  #### Logical Entity Models
+  entity_models: &entity_models_section
+    # All entity models from common_entities-campaign_intelligence--datacontract are included here.
+      # Entity models list: &campaign_dimension, &ad_group_dimension, &ad_dimension, &label_dimension, &keyword_dimension, &url_dimension
+    include: combined_sources-campaign_intelligence--datacontract::logical_models:entity_models 
+
+    platform_report_model: &platform_report_model
+      description: >
+        Aggregates the metrics in (./campaign_intelligence_aggregated.yaml) first by platform and then by day.
+        This model serves as the primary layer for reporting, grouping data by 'platform_id' followed by the 'date'.
+      properties:
+        grouping_dimension_properties:
+          include: combined_sources-campaign_intelligence--datacontract::logical_models:entity_models:dimension_models:platform_dimension
+                   :platform_id
+            description_for_reporting: Primary grouping ("group by") dimension.
+          include: common_entities-campaign_intelligence--datacontract::logical_models:objects
+                   :date_object
+            description_for_reporting: Secondary grouping ("group by") dimension.
+        descriptive_dimensions_properties:
+          #none
+        metrics_properties:
+          # All metrics_model properties from combined_sources-campaign_intelligence--data_contract
+          include: combined_sources-campaign_intelligence--datacontract::logical_models:entity_models:metrics_model:properties
+                   :metrics_properties
+            description_for_reporting: All metrics properties from the platform_metrics model are included here.
+   
+
+    account_report_model: &account_report_model
+      description: >
+        Aggregates the metrics in (./campaign_intelligence_aggregated.yaml) by account and day.
+        This model provides insights into account-level performance, structured to facilitate analysis by 'account_id' followed by 'date'.
+        Both fields serve as primary aggregates for slicing data temporally and by account.
+      properties:
+        aggregation_dimensions:
+          account_id:
+            description: Primary aggregate, grouping data at the account level.
+            type: integer
+          date:
+            <<: *date
+            description: Secondary aggregate, further grouping the data by day.
+        metrics_properties:
+          # All metricsProperties from ./campaign_intelligence_aggregated.yaml are included here.
+
+    campaign_report_model: &campaign_report_model
+      description: Aggregates the metrics in (./campaign_intelligence_aggregated.yaml) by campaign and day.
+      properties:
+        foreign_key_properties:
+          campaign_id:
+            description: Foreign key to the campaign dimension.
+            type: integer
+          platform_id:
+            description: Foreign key to the platform dimension.
+            type: integer
+          account_id:
+            description: Foreign key to the account dimension.
+            type: integer
+          date:
+            <<: *date
+            description: Date associated with the metric.
+        metrics_properties:
+          # All metricsProperties from ./campaign_intelligence_aggregated.yaml are included here.
+
+    ad_group_report_model: &ad_group_report_model
+      description: Aggregates the metrics in (./campaign_intelligence_aggregated.yaml) by ad group and day.
+      properties:
+        foreign_key_properties:
+          ad_group_id:
+            description: Foreign key to the ad group dimension.
+            type: integer
+          platform_id:
+            description: Foreign key to the platform dimension.
+            type: integer
+          account_id:
+            description: Foreign key to the account dimension.
+            type: integer
+          date:
+            <<: *date
+            description: Date associated with the metric.
+        metrics_properties:
+          # All metricsProperties from ./campaign_intelligence_aggregated.yaml are included here.

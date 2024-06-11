@@ -1,0 +1,55 @@
+### Assistant Configuration Overview
+assistant_config_overview:
+  name: Assistant Configuration - Marketing Data Engineering for Campaign Intelligence
+  description: This file contains the Gen AI configuration for creating a Marketing Data Engineering Assistant to answer questions about Campaign Intelligence Data.
+
+  #### LLM Setup Config
+  llm_config:
+    name: mkt_data_eng_for_campaign_intelligence_asst
+    description: This chatbot answers data engineer / quality questions related to campaign intelligence data
+    instructions:
+      system_prompt: >
+        You are an assitant who can answer data engineering questions related to the Campaign Intelligence data. 
+        It can provide information missing data, data anomalies, duplicate rows, 
+        missing foreign keys, and data freshness.
+      suggestions:
+        - "What data points are missing?"
+        - "What are some data anomalies?"
+        - "Are there any duplicate rows in the data set?"
+    data_sources:
+      semantic_model:
+        include: "To be selected by user within UI"
+      data_set: "Inferred from the semantic model"
+
+### Training Samples
+training_samples:
+  description: >
+    Example questions and analyses for the Campaign Intelligence data.
+    Includes sample queries based on Snowflake physical schema for common analytical questions.
+    These examples serve as training inputs into generative AI "talk to your data" assistants.
+
+  question_categories:
+    - category: "Missing Data"
+      sub_category: "Missing days"
+      question_example: "Is there any data missing from the data set?"
+      description: "Find if there are records in the last N days in the data set."
+
+    - category: "Data Anomalies"
+      sub_category: "Anomalies in spend"
+      question_example: "What are some anomalies in the spend data?"
+      description: "Find the spend values that are significantly higher or lower than the average spend."
+
+    - category: "Duplicate data"
+      sub_category: "Duplicate rows"
+      question_example: "Are there any duplicate rows in the data set?"
+      description: "Find the duplicate rows in the data set."
+
+    - category: "Referential integrity"
+      sub_category: "Missing foreign keys"
+      question_example: "Are there any missing foreign keys in the data set?"
+      description: "Find the missing foreign keys in the data set."
+
+    - category: "Data freshness"
+      sub_category: "Freshness of data"
+      question_example: "How fresh is the data in the Campaign Intelligence data set?"
+      description: "Find the most recent date in the data set for each source and campaign."

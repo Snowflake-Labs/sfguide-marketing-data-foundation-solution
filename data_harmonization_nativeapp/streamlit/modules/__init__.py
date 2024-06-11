@@ -1,0 +1,6 @@
+from modules.pages import switch_page
+from modules.select_source_model import select_source_model_page
+from modules.platform_analytics_module.add_platform_analytics_model import add_platform_analytics_model_page
+from modules.data_quality import data_quality_page
+from modules.data_explorer import data_explorer_page
+from modules.chat_bot import chat_assistant_page

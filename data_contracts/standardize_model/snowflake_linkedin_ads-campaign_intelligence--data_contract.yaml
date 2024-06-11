@@ -1,0 +1,99 @@
+### Data Contract Overview
+data_contract_overview: &overview_section
+  id: &campaign-intelligence-linkedin-ad::data-contract:v0.1.1:b066e810-22f0-4ce8-b3f8-01e30325cffe
+    id_name: campaign-intelligence-linkedin-ads::data-contract
+    uuid: b066e810-22f0-4ce8-b3f8-01e30325cffe
+  info:
+    title: Campaign Intelligence - LinkedIn Ads - Star Schema - Data Contract
+    type: data_contract
+    format: YAML
+    version: 0.1.1
+    date_created: April 25, 2024
+    date_last_updated: April 28, 2024 
+    status: draft
+    description: >
+      Aggregated campaign intelligence for LinkedIn Ads.
+      Standard for expressing ad reporting data in a Star Schema format. Optimized for analytical queries
+      across dimensions such as time, campaigns, platforms, and geographical locations to facilitate
+      insightful advertising performance analysis.
+    use_case: Marketing -> Marketing Intelligence Platform -> Campaign Intelligence -> LinkedIn Ads
+    related_entities:
+      upstream_entities:
+        - Connectors for LinkedIn Ads
+      downstream_entities:
+        transformations:
+          - unify-individual-channels-into-aggreated-campaign-intelligence-transformation
+        data_contracts: 
+          - campaign-intelligence-aggregated-data-contract          
+    ownership:
+      owner: Marketing Data Cloud Team
+      contact:
+        owner: Data Standards Team for the Snowflake Marketing Data Cloud
+        email: data-standards-mdc-DL@snowflake.com
+
+  #### Table of Contents
+  table_of_contents:
+    - - *overview_section
+      - *terms_section
+    - - *logical_models_section
+      - - *objects_section
+        - *enums_section
+    - - *data_quality_section
+    - #Sample Sections
+      - - *sample_physical_schema_section
+        - *sample_data_section
+        - *sample_questions_and_analyses_section
+
+### Terms
+terms: &terms_section
+  usage: >
+    Data used to analyze campaign performance within LinkedIn Ads.
+  limitations: >
+    Does not include Customer 360 data that can be tied directly to a person, either a customer or propspect.
+
+### Logical Models
+models: &logical_models_section
+  description: >
+    The Campaign Intelligence - LinkedIn Ads - Star Schema - Data Contract is a standard for expressing 
+    ad reporting data in a Star Schema format. Optimized for analytical queries across dimensions such as 
+    time, campaigns, platforms, and geographical locations to facilitate insightful advertising performance analysis.
+
+  # Use all the properties from the campaign intelligence aggregated data contract logical models,  
+  <<: *campaign-intelligence-aggregated-data-contract:v0.1.1:12345678ef7f2218-4fdb-45b3-ab69-11d04d1426c9 -> *logical_models_section
+    
+  # With the following edits:
+
+  ### Metrics Model
+  metrics_model:
+    description: Metrics model in Campaign Intelligence star schema, focusing on linking quantifiable performance metrics with related dimensions.
+    type: metric
+    properties:
+      # All properties from the metrics model in the aggregate data contract are included here.
+      <<: *campaign-intelligence-aggregated-data-contract:v0.1.1:12345678ef7f2218-4fdb-45b3-ab69-11d04d1426c9 -> *logical_models_section -> *metrics_model
+      # With the following edits:
+
+
+  ### Dimension Models
+  dimension_models:
+    description: >
+      Dimension models for LinkedIn Ads.
+    included_models:
+      # All dimension models from the aggregate data contract are included here.  
+      <<: *campaign-intelligence-aggregated-data-contract:v0.1.1:12345678ef7f2218-4fdb-45b3-ab69-11d04d1426c9 -> *logical_models_section -> *dimension_models
+      # With the following edits:
+
+    platform_dimension_linkedin_ads:
+      description: Dimension for LinkedIn Ads platform details.
+      model_type: dimension
+      properties:
+      # All properties from the ad_dimension in the aggregate data contract are included here.
+        <<: *campaign-intelligence-aggregated-data-contract:v0.1.1:12345678ef7f2218-4fdb-45b3-ab69-11d04d1426c9 \
+        -> *logical_models_section -> *dimension_models -> *platform_dimension
+
+
+    account_dimension_linkedin_ads:
+      description: Dimension for LinkedIn Ads account details.
+      model_type: dimension
+      properties:
+        # All properties from the account_dimension in the aggregate data contract are included here.
+        <<: *campaign-intelligence-aggregated-data-contract:v0.1.1:123

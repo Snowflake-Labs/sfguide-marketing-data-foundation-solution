@@ -1,0 +1,181 @@
+name: UnifiedMarketingModel
+tables:
+  - name: CAMPAIGN_PERFORMANCE
+    description: This dataset provides an overview of the performance of different campaigns, ad groups, and ads in the database. This semantic model appears to be based on the metrics, which contains detailed information about the performance of different campaigns, ad groups, and ads, including the number of clicks, conversions, impressions, and spend. We can check additional information about the ads, such as the ad type, name, and URL. We can also review this dataset to see information about the campaigns, such as the budget remaining, daily budget, and start and stop times. Overall, this semantic model is a useful starting point for analyzing the performance of different campaigns, ad groups, and ads in the database.
+    base_table:
+      database: Snowflake_Marketing_Data_Cloud_mfigueroamontero
+      schema: AGGREGATED_REPORTS
+      table: CAMPAIGN_PERFORMANCE
+    dimensions:
+      - name: ACCOUNT_NAME
+        description: The name of the account associated with the campaign.
+        expr: ACCOUNT_NAME
+        data_type: TEXT
+        sample_values:
+          - "Snowflake Product Account"
+          - "Snowflake Sponsored Account"
+
+      - name: AD_GROUP_NAME
+        description: The name of the ad group associated with the campaign.
+        expr: AD_GROUP_NAME
+        data_type: TEXT
+          - "Arctic Enterprise Ad Group"
+          - "Marketing Data Cloud Forum Ad Group"
+          - "Arctic AI Insights Ad Group"
+
+      - name: CAMPAIGN_NAME
+        description: The name of the campaign associated with the metrics.
+        expr: CAMPAIGN_NAME
+        data_type: TEXT
+        sample_values:
+          - "Arctic Enterprise LLM 2024"
+          - "Marketing Data Cloud Forum 2024"
+          - "Data Cloud Expo 2024"
+          - "Data Cloud Summit Series"
+
+      - name: ACCOUNT_STATUS
+        description: The status of the account associated with the campaign.
+        expr: ACCOUNT_STATUS
+        data_type: TEXT
+        sample_values:
+          - "INACTIVE"
+          - "ACTIVE"
+          - "CLOSED"
+
+      - name: CAMPAIGN_STATUS
+        description: The status of the campaign associated with the metrics.
+        expr: CAMPAIGN_STATUS
+        data_type: TEXT
+        sample_values:
+          - "INACTIVE"
+          - "ACTIVE"
+          - "CLOSED"
+
+      - name: ACCOUNT_CREATED_AT
+        description: The timestamp when the campaign was created.
+        expr: ACCOUNT_CREATED_AT
+        data_type: TEXT
+        sample_values:
+          - "2022-01-20 20:59:50.000"
+
+      - name: ACCOUNT_UPDATED_AT
+        description: The timestamp when the campaign was updated.
+        expr: ACCOUNT_UPDATED_AT
+        data_type: TEXT
+        sample_values:
+          - "2008-07-13 03:36:39.000"
+
+      - name: CAMPAIGN_CREATED_AT
+        description: The timestamp when the campaign was created.
+        expr: CAMPAIGN_CREATED_AT
+        data_type: TEXT
+        sample_values:
+          - "2024-04-26 20:21:56.000"
+
+      - name: DATE_START_CAMPAIGN
+        description: The timestamp when the campaign started.
+        expr: DATE_START_CAMPAIGN
+        data_type: TEXT
+        sample_values:
+          - "2024-04-29 19:39:00.000"
+
+      - name: DATE_END_CAMPAIGN
+        description: The timestamp when the campaign ended.
+        expr: DATE_END_CAMPAIGN
+        data_type: TEXT
+        sample_values:
+          - "2024-05-25 07:00:00.000"
+
+      - name: TIMEZONE
+        description: Contains the timezone associated with the campaign performance data.
+        expr: TIMEZONE
+        data_type: TEXT
+        sample_values:
+          - "America/Los_Angeles"
+
+      - name: CURRENCY_KEY
+        description: The currency associated with the campaign performance data in the view.
+        expr: CURRENCY_KEY
+        data_type: TEXT
+        sample_values:
+          - "US"
+
+      - name: BUSINESS_COUNTRY_CODE
+        description: The country code associated with the campaign performance data.
+        expr: BUSINESS_COUNTRY_CODE
+        data_type: TEXT
+        sample_values:
+          - "US"
+
+      - name: PLATFORM_NAME
+        description: The name of the platform associated with the campaign performance data.
+        expr: PLATFORM_NAME
+        data_type: TEXT
+        sample_values:
+          - "facebook"
+          - "linkedin"
+
+    time_dimensions:
+      - name: DATE
+        description: The date associated with the campaign performance data in the view.
+        expr: DATE
+        data_type: DATE
+        sample_values:
+          - "2021-04-30"
+          - "2020-11-02"
+          - "2024-02-09"
+          - "2020-02-24"
+          - "2020-09-14"
+
+    measures:
+      - name: IMPRESSIONS
+        description: Number of times an ad was shown to a user.
+        expr: IMPRESSIONS
+        data_type: NUMBER
+        sample_values:
+          - "52"
+          - "227"
+          - "178"
+          - "692"
+          - "13"
+
+      - name: DAILY_BUDGET
+        description: The max amount of money spent on a campaign per day.
+        expr: DAILY_BUDGET
+        data_type: NUMBER
+        sample_values:
+          - "500"
+
+      - name: LIFETIME_BUDGET
+        description: The amount of money spent on a campaign since it begin.
+        expr: LIFETIME_BUDGET
+        data_type: NUMBER
+        sample_values:
+          - "5000"
+
+      - name: BUDGET_REMAINING
+        description: The amount of money remaining for a campaign.
+        expr: BUDGET_REMAINING
+        data_type: NUMBER
+        sample_values:
+          - "50"
+
+      - name: CLICKS
+        description: The number of clicks on the ad associated with the campaign.
+        expr: CLICKS
+        data_type: NUMBER
+        sample_values:
+          - "0"
+          - "1"
+          - "2"
+
+      - name: SPEND
+        description: The amount of money spent on a campaign.
+        expr: SPEND
+        data_type: NUMBER
+        sample_values:
+          - "1.70"
+          - "1.59"
+          - "4.85"
+          - "30.76"
+          - "0.34"

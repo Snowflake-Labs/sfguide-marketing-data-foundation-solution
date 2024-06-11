@@ -1,0 +1,7 @@
+definition_version: 1
+native_app:
+  name: Snowflake_Marketing_Data_Cloud
+  source_stage: app_src.stage
+  artifacts:
+    - src: data_harmonization_nativeapp/*
+      dest: ./

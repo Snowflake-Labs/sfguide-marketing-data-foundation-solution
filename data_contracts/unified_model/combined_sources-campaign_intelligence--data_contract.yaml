@@ -1,0 +1,699 @@
+### Data Contract Overview
+data_contract_overview: &overview_section
+  id: &combined_sources-campaign_intelligence--data_contract:v0.1.1:12345678ef7f2218-4fdb-45b3-ab69-11d04d1426c9 
+      #ID anchor is formed by concatenating id_name:version:uuid
+    id_name: combined_sources-campaign_intelligence--data_contract
+    uuid: 12345678ef7f2218-4fdb-45b3-ab69-11d04d1426c9
+  info:
+    title: Campaign Intelligence - Combined - Star Schema - Data Contract
+    type: data_contract
+    format: YAML
+    version: 0.1.1
+    date_created: April 25, 2024
+    date_last_updated: April 28, 2024 
+    status: draft
+    description: >
+      This data contract defines the standard for expressing combined campaign intelligence across paid and owned channels.
+      include: common_entities-campaign_intelligence--datacontract::data_contract_overview:description
+    use_case: Marketing -> Marketing Intelligence Platform -> Campaign Intelligence
+    related_entities:
+      common_entities:
+        - common_entities-campaign_intelligence--datacontract
+      upstream_entities:
+        data_contracts:
+          #Snowflake per Source Models
+          - campaign-intelligence-facebook-ads::data-contract
+          - campaign-intelligence-google-ads::data-contract
+          - campaign-intelligence-twitter-ads::data-contract
+        transformations: 
+        - individual_sources_to_combined_sources::transform
+      downstream_entities:
+        transformations:
+          - generate-campaign_intelligence_aggregated_reports::transform
+        data_contracts:
+          - campaign_intelligence_aggregated_reports::data-contract
+    ownership:
+      include: common-campaign_intelligence--datacontract::data_contract_overview:ownership
+
+  #### Table of Contents
+    table_of_contents:
+    - - *overview_section
+      - *terms_section
+    - - *logical_models_section
+        - - *objects_section
+        - - *enums_section
+        - - *entity_models_section
+
+    - - *data_quality_section
+    - #Sample Sections
+      - - *sample_physical_schema_section
+        - *sample_data_section
+        - *sample_questions_and_analyses_section
+
+### Terms
+terms: &terms_section
+    # All Terms from common_entities-campaign_intelligence--datacontract are included here.
+    include: common_entities-campaign_intelligence--datacontract::terms
+
+### Logical_Models
+logical_models:
+  #### Objects
+  objects: &objects_section
+    # All Objects from common_entities-campaign_intelligence--datacontract are included here.
+      # Objects list: &date_object, &timestamp_object, &timezone_object, &geography_object, &currency_object
+    include: common_entities-campaign_intelligence--datacontract::logical_models:objects
+
+
+  ### Enums
+  enums: &enums_section
+    # All enums from common_entities-campaign_intelligence--datacontract are included here.
+      # Enums list: &platform_dimension:platform_id, &platform_dimension:platform_name, 
+      &campaign_dimension:campaign_status, &campaign_dimension:ad_group_status, 
+      &ad_dimension:ad_type, &ad_dimension:ad_status, &label_dimension:campaign_object_type
+    include: common_entities-campaign_intelligence--datacontract::logical_models:enums
+
+  #### Logical Entity Models
+  entity_models: &entity_models_section
+    description: >
+      Defines logical models (not physical schema) for the combined Campaign Intelligence star schema.
+      Focuses on metrics and dimensions to represent campaign performance data hierarchically.
+      Includes one metrics model and multiple dimension models.
+
+    ##### Metrics Model
+    metrics_model: &metrics_model
+      description: Metrics model in Campaign Intelligence star schema, focusing on linking quantifiable performance metrics with related dimensions.
+      type: metric
+      properties:
+        foreign_key_properties:
+          description: Foreign keys linking to dimension models.
+          properties:
+            date_key:
+              description: Date associated with the metric.
+              type: string
+              <<: *date_object
+            timezone_key:
+              description: Timezone information based on the IANA Time Zone Database.
+              type: object
+              <<: *timezone_object
+            geography_key:
+              description: Detailed geographical location information.
+              type: object
+              <<: *geography_object
+            platform_id:
+              description: Foreign key to the platform dimension.
+              type: integer
+            account_id:
+              description: Foreign key to the account dimension.
+              type: integer
+            campaign_id:
+              description: Foreign key to the campaign dimension. Can have value "All".
+              type: integer
+            ad_group_id:
+              description: Foreign key to the ad group dimension. Can have value "All".
+              type: string
+            keyword_id:
+              description: Foreign key to the keyword dimension. Can have value "All".  
+              type: string
+            label_id:
+              description: Foreign key to the label dimension. Can have value "All".
+              type: string
+            currency_key:
+              description: Foreign key to the currency object, defining the currency for financial metrics based on ISO 4217 standards.
+              type: string
+              <<: *currency_object
+        metrics_properties:
+          description: Quantifiable metrics of the advertising performance.
+          properties:
+            impressions:
+              description: The count of impressions.
+              type: integer
+            clicks:
+              description: The count of clicks.
+              type: integer
+            spend:
+              description: The cost of the ads.
+              type: float
+            conversions:
+              description: The count of conversions.
+              type: integer
+            value_of_conversions:
+              description: The total value of conversions.
+              type: float
+
+    ##### Dimension Models
+    dimension_models: &dimension_models
+      description: >
+        Dimension models for the Campaign Intelligence star schema.
+        The Platform Dimensions Models include Platform -> Account and associated child dimension models.
+        The dimension hierarchy is Platform -> Account -> Campaign -> Ad Group -> (Ad, Keyword, Label).
+      dimension_hierarchy: &dimension_hierarchy
+        description: " Dimension hierarchy for Campaign Intelligence schema: Platform -> Account -> Campaign -> Ad Group -> (Ad, Keyword, Label)."
+        hierarchy:
+          - platform_dimension:
+              child:
+                - account_dimension:
+                    child:
+                      - campaign_dimension:
+                          child:
+                            - ad_group_dimension:
+                                children:
+                                  - ad_dimension
+                                  - keyword_dimension
+                                  - label_dimension
+
+      platform_dimension: &platform_dimension
+        description: Marketing platform details. Platforms include Google Ads, Facebook Ads, Instagram Ads, Twitter Ads, LinkedIn Ads, etc.
+        model_type: dimension
+        properties:
+          platform_id:
+            description: Unique identifier for each platform.
+            type: integer
+            enum: *platform_dimension:platform_id::enum # Refer to the enum section for values
+          platform_name:
+            description: Name of the advertising platform.
+            type: string
+            enum: *platform_dimension:platform_name::enum # Refer to the enum section for values
+
+      account_dimension: &account_dimension
+        description: Details for each account within a platform.
+        model_type: dimension
+        properties:
+          account_id:
+            description: Unique identifier for each account.
+            type: integer
+          account_name:
+            description: Name of the account.
+            type: string
+          account_status:
+            description: Current status of the account.
+            type: string
+          business_country_code:
+            description: Country code of the business associated with the account.
+            <<: *geography_object:country_code
+          currency_key:
+            description: Foreign key to the currency object, defining the currency for financial metrics based on ISO 4217 standards.
+            <<: *&currency_object:currency_key
+          timezone_key:
+            description: Foreign key to the timezone dimension.
+            <<: *timezone_object:timezone_key
+          created_at:
+            description: Created time.
+            <<: *timestamp_object
+          updated_at:
+            description: The timestamp of the last update of a record.
+            <<: *timestamp_object
+          is_most_recent_record:
+            description: Boolean representing whether a record is the most recent version.
+            type: boolean
+
+      campaign_dimension: &campaign_dimension
+          description: Dimension for campaign details.
+          model_type: dimension
+          properties:
+            campaign_id:
+              description: Unique identifier for each campaign.
+              type: integer
+            campaign_name:
+              description: Name of the campaign.
+              type: string
+            account_id:
+              description: The ID of the ad account that this campaign belongs to.
+              type: integer
+            date_start:
+              description: The date when the campaign started, in YYYY-MM-DD format.
+              <<: *date_object
+            date_end:
+              description: The date when the campaign ended, in YYYY-MM-DD format.
+              <<: *date_object
+            campaign_status:
+              description: Current status of the campaign.
+              type: string
+              enum: *campaign_dimension:campaign_status::enum # Refer to the enum section for values
+            daily_budget:
+              description: Daily budget allocated for the campaign.
+              type: integer
+            lifetime_budget:
+              description: Total budget allocated for the campaign's lifetime.
+              type: integer
+            budget_remaining:
+              description: Remaining budget for the campaign.
+              type: number
+            created_at:
+              description: Creation time of the campaign.
+              <<: *timestamp_object
+            updated_at:
+              description: The timestamp of the last update of the campaign.
+              <<: *timestamp_object
+            is_most_recent_record:
+              description: Boolean representing whether a campaign record is the most recent version.
+              type: boolean
+
+      ad_group_dimension: &ad_group_dimension
+        description: Dimension for ad group details.
+        model_type: dimension
+        properties:
+          ad_group_id:
+            description: Unique identifier for each ad group.
+            type: string
+          ad_group_name:
+            description: Name of the ad group.
+            type: string
+          campaign_id:
+            description: Unique identifier for each campaign.
+            type: integer
+          account_id:
+            type: integer
+            format: int64
+            description: The ID of the ad account that this campaign belongs to. 
+          ad_group_status:
+            description: Current status of the ad group.
+            type: string
+            enum: *campaign_dimension:ad_group_status::enum
+          created_at:
+            description: Creation time of the ad group.
+            <<: *timestamp_object
+          updated_at:
+            description: The timestamp of the last update of the ad group.
+            <<: *timestamp_object
+          is_most_recent_record:
+            description: Boolean representing whether an ad group record is the most recent version.
+            type: boolean
+
+      ad_dimension: &ad_dimension
+        description: Dimension for ad details.
+        model_type: dimension
+        properties:
+          ad_id:
+            description: Unique identifier for each ad.
+            type: string
+          ad_name:
+            description: Name of the ad.
+            type: string
+          ad_type:
+            description: Type of the ad.
+            type: string
+            enum: *ad_dimension:ad_type::enum
+          display_url:
+            description: The display URL of the ad.
+            type: string
+          full_ad_url:
+            description: The full URL of the ad including base URL and UTM parameters.
+            type: string
+          ad_group_id:
+            description: Unique identifier for each ad group.
+            type: string
+          campaign_id:
+            description: Unique identifier for each campaign.
+            type: integer
+          account_id:
+            description: The ID of the ad account that this campaign belongs to.
+            type: integer
+            format: int64
+          ad_status:
+            description: Current status of the campaign.
+            type: string
+            enum:   *ad_dimension:ad_status::enum
+          created_at:
+            description: Creation time of the ad.
+            <<: *timestamp_object
+          updated_at:
+            description: The timestamp of the last update of the ad.
+            <<: *timestamp_object
+          is_most_recent_record:
+            description: Boolean representing whether an ad record is the most recent version.
+            type: boolean
+
+      keyword_dimension: &keyword_dimension
+        description: Dimension for keyword details.
+        model_type: dimension
+        properties:
+          keyword_id:
+            description: Unique identifier for each keyword.
+            type: string
+          keyword:
+            description: Name of the keyword.
+            type: string
+          ad_group_id:
+            description: Unique identifier for each ad group.
+            type: string
+          campaign_id:
+            description: Unique identifier for each campaign.
+            type: integer
+          account_id:
+            description: The ID of the ad account that this campaign belongs to.
+            type: integer
+            format: int64
+          created_at:
+            description: Creation time of the keyword.
+            <<: *timestamp_object
+          updated_at:
+            description: The timestamp of the last update of the keyword.
+            <<: *timestamp_object
+
+      label_dimension: &label_dimension
+        description: Dimension for label details.
+        model_type: dimension
+        properties:
+          label_id:
+            description: Unique identifier for each label.
+            type: string
+          label_name:
+            description: Name of the label.
+            type: string
+          account_id:
+            description: The ID of the ad account that this campaign belongs to.
+            type: integer
+            format: int64
+          campaign_object_type:
+            description: The type of object the label is associated with.
+            type: string
+            enum: *label_dimension:campaign_object_type::enum 
+          object_id:
+            description: The ID of the object the label is associated with.
+            type: string
+          created_at:
+            description: Creation time of the label.
+            <<: *timestamp_object
+          updated_at:
+            description: The timestamp of the last update of the label.
+            <<: *timestamp_object
+          is_most_recent_record:
+            description: Boolean representing whether a label record is the most recent version.
+            type: boolean
+
+              
+### Data Quality
+data_quality: &data_quality_section
+  description: >
+    Defines data quality checks for the Campaign Intelligence star schema.
+    Includes checks for missing values, duplicate keys, referential integrity, data freshness, and anomaly detection.
+  type: SodaCL
+  specification: |-
+    # Ensure no missing values in key dimension and metric identifiers
+    - missing_values:
+        tables: [date_dimension, platform_dimension, account_dimension, campaign_dimension, ad_group_dimension, metrics_model]
+        columns: [date_key, platform_id, account_id, campaign_id, ad_group_id]
+        fail: if any missing
+        description: "Ensure no missing values in key identifiers across all tables."
+
+    # Check for duplicate keys in dimension tables
+    - duplicate_count:
+        table: date_dimension
+        column: date_key
+        fail: if > 0
+        description: "Check for duplicate date keys in date_dimension."
+        
+    - duplicate_count:
+        table: platform_dimension
+        column: platform_id
+        fail: if > 0
+        description: "Ensure unique platform IDs in platform_dimension."
+
+    # Referential integrity checks
+    - referential_integrity:
+        foreign_key: account_id
+        referenced_table: account_dimension
+        referenced_column: account_id
+        fail: if missing
+        description: "Validate campaign's account_id against account_dimension in campaign_dimension."
+
+    - referential_integrity:
+        foreign_key: campaign_id
+        referenced_table: campaign_dimension
+        referenced_column: campaign_id
+        fail: if missing
+        description: "Validate ad group's campaign_id against campaign_dimension in ad_group_dimension."
+
+    # Data freshness for metricsModel
+    - freshness:
+        table: metrics_model
+        column: date_key
+        warn: if > 24h
+        fail: if > 48h
+        description: "Check that metrics_model data is updated at least once every 24 hours, with warnings after 24 hours and failures after 48 hours."
+
+    # Anomaly detection in metrics data
+    - anomaly_detection:
+        table: metrics_model
+        column: impressions
+        algorithm: z_score
+        warn: if > 3 std dev
+        description: "Flag any records where 'impressions' are more than 3 standard deviations from the mean in metrics_model, indicating potential outliers."
+
+### Sample Physical Schema
+sample_physical_schema: &sample_physical_schema_section
+  description: >
+    Reference Snowflake SQL DDL for the Campaign Intelligence star schema.
+    Includes tables for metrics and dimensions, as well as a wide table for analytical queries.
+  list_of_sample_physical_schemas:  
+    -schema_name: sample_snowflake_physical_schema_campaign_intelligence
+    description: Reference Snowflake SQL DDL for the Campaign Intelligence star schema. 
+    type: snowflake-sql-ddl
+    snowflake-sql-ddl:
+      # Metrics Table
+      CREATE TABLE metrics_model (
+          date_key STRING,
+          timezone_key INTEGER,
+          geography_key STRING,
+          platform_id INTEGER,
+          account_id INTEGER,
+          campaign_id INTEGER,
+          ad_group_id STRING,
+          keyword_id STRING,
+          label_id STRING,
+          impressions INTEGER,
+          clicks INTEGER,
+          spend FLOAT,
+          conversions INTEGER,
+          value_of_conversions FLOAT
+      );
+
+      # Dimension Tables
+
+      # create platform_dimension
+      CREATE TABLE platform_dimension (
+          platform_id INTEGER PRIMARY KEY,
+          platform_name STRING
+      );
+
+      # create account_dimension
+      CREATE TABLE account_dimension (
+          account_id INTEGER PRIMARY KEY,
+          account_name STRING,
+          account_status STRING,
+          business_country_code STRING,
+          currency_key STRING,
+          timezone_key INTEGER,
+          created_at TIMESTAMP,
+          updated_at TIMESTAMP,
+          status STRING,
+          is_most_recent_record BOOLEAN
+      );
+
+      # create campaign_dimension
+      CREATE TABLE campaign_dimension (
+          campaign_id INTEGER PRIMARY KEY,
+          campaign_name STRING,
+          account_id INTEGER,
+          date_start STRING,
+          date_end STRING,
+          daily_budget INTEGER,
+          lifetime_budget INTEGER,
+          budget_remaining FLOAT,
+          created_at TIMESTAMP,
+          updated_at TIMESTAMP,
+          status STRING,
+          is_most_recent_record BOOLEAN
+      );
+
+      # create other dimension tables here
+    
+      # also define a schema for one wide table
+      CREATE TABLE campaign_intelligence_wide (
+          date_key STRING,
+          timezone_key INTEGER,
+          geography_key STRING,
+          platform_id INTEGER,
+          account_id INTEGER,
+          campaign_id INTEGER,
+          ad_group_id STRING,
+          keyword_id STRING,
+          label_id STRING,
+          impressions INTEGER,
+          clicks INTEGER,
+          spend FLOAT,
+          conversions INTEGER,
+          value_of_conversions FLOAT,
+          platform_name STRING,
+          account_name STRING,
+          account_status STRING,
+          business_country_code STRING,
+          currency_key STRING,
+          timezone_key INTEGER,
+          created_at TIMESTAMP,
+          updated_at TIMESTAMP,
+          status STRING,
+          is_most_recent_record BOOLEAN,
+          campaign_name STRING,
+          date_start STRING,
+          date_end STRING,
+          daily_budget INTEGER,
+          lifetime_budget INTEGER,
+          budget_remaining FLOAT,
+          ad_group_name STRING,
+          ad_id STRING,
+          ad_name STRING,
+          ad_type STRING,
+          full_ad_url STRING,
+          keyword STRING,
+          label_name STRING,
+          object_type STRING,
+          object_id STRING
+      );
+
+
+
+
+
+### Sample Data
+sample_data: &sample_data_section
+  description: >
+    Sample data for the Campaign Intelligence star schema.
+    Includes sample data for metrics and dimension tables.
+  type: csv
+  datasets:
+    title: Snowflake Sticker Site Campaign Intelligence Data
+    description: >
+      Sample Campaign Intelligence data for demo Snowflake Sticker site. 
+      Users can visit the site and vote on sticker options. 
+    models:
+    - name: metrics_model
+      data: |-
+        date_key,timezone_key,geography_key,platform_id,account_id,campaign_id,ad_group_id,keyword_id,label_id,impressions,clicks,spend,conversions,value_of_conversions
+        20210101,1,"USA",1,1,1001,"AG101","KW101","L101",1000,100,500.00,10,100.00
+        20210101,1,"USA",1,1,1001,"AG101","KW102","L101",950,90,450.00,9,90.00
+        20210101,1,"USA",1,1,1001,"AG102","KW103","L102",800,80,400.00,8,80.00
+        20210101,1,"USA",1,1,1001,"AG102","KW104","L102",750,70,350.00,7,70.00
+        20210101,1,"USA",1,1,1002,"AG103","KW105","L103",700,60,300.00,6,60.00
+        20210101,1,"USA",1,1,1002,"AG103","KW106","L103",650,50,250.00,5,50.00
+        20210101,1,"USA",1,1,1002,"AG104","KW107","L104",600,40,200.00,4,40.00
+        20210101,1,"USA",1,1,1002,"AG104","KW108","L104",550,30,150.00,3,30.00
+        20210101,1,"USA",1,1,1003,"AG105","KW109","L105",500,20,100.00,2,20.00
+        20210101,1,"USA",1,1,1003,"AG105","KW110","L105",450,10,50.00,1,10.00
+
+ 
+
+
+### Example Questions and Analyses
+questions_and_analyses: &sample_questions_and_analyses_section
+  description: >
+    Example questions and analyses for the Campaign Intelligence star schema.
+    Includes sample queries based on Snowflake physical schema for common analytical questions.
+    These examples serve as training inputs into generative AI "talk to your data" and traditional BI tools.
+
+  - category: "Spend by platform."
+      sub_category: "Spend by platform all time." 
+          question_example: "On which paid platform have we spent the most all time?"
+            analysis:
+              description: "Calculate the total spend by platform in descending order."
+              query: |-
+                SELECT platform_id, SUM(spend) AS total_spend
+                FROM metrics_model
+                GROUP BY platform_id
+                ORDER BY total_spend DESC
+              result: |-
+                platform_id,platform_name, total_spend
+                1, "Facebook Ads", 1025.00
+                2, "Google Ads", 975.00
+      sub_category: "Spend by platform in a time period" 
+          question_example: "On which paid platform did we spend the most in the past year?"
+            analysis:
+              description: "Calculate the total spend by platform for past year in descending order."
+              query: |-
+                SELECT platform_id, SUM(spend) AS total_spend
+                FROM metrics_model
+                GROUP BY platform_id
+                ORDER BY total_spend DESC
+              result: |-
+                platform_id,platform_name, total_spend
+                1, "Google Ads", 975.00
+                2, "Facebook Ads", 1025.00
+          question_example: "On which paid platform did we spend the least in the past month?"
+            analysis:
+              description: "Calculate the total spend by platform for past month in ascending order."
+              query: |-
+                SELECT platform_id, SUM(spend) AS total_spend
+                FROM metrics_model
+                GROUP BY platform_id
+                ORDER BY total_spend ASC
+              result: |-
+                platform_id,platform_name, total_spend
+                1, "Google Ads", 450.00
+                2, "Facebook Ads", 500.00
+
+  - category: "Spend by campaign."
+      sub_category: "Spend by campaign all time" 
+      question_category: "Spend by campaign in a time period"
+          question_example: "On which paid campaign did we spend the most in the past year?"
+            analysis:
+              description: "Calculate the total spend by campaign for past year in descending order."
+              query: |-
+                SELECT campaign_id, SUM(spend) AS total_spend
+                FROM metrics_model
+                GROUP BY campaign_id
+                ORDER BY total_spend DESC
+              result: |-
+                campaign_id,campaign_name, total_spend
+                1001, "Winter Sale", 950.00
+                1002, "Summer Launch", 1050.00
+
+
+  - description: "Total spend by day by platform" 
+    query: |-
+      SELECT date_key, platform_id, SUM(spend) AS total_spend
+      FROM metrics_model
+      GROUP BY date_key, platform_id
+      ORDER BY date_key, platform_id
+    result: |-
+      date_key,platform_id,total_spend
+      20210101,1,450.00
+      20210101,2,500.00
+      20210102,1,475.00
+      20210102,2,525.00
+
+  - description: "Total conversions by campaign"
+    query: |-
+      SELECT campaign_id, SUM(conversions) AS total_conversions
+      FROM metrics_model
+      GROUP BY campaign_id
+      ORDER BY total_conversions DESC
+    result: |-
+      campaign_id,total_conversions
+      1001,40
+      1002,47
+
+  - description: "Total clicks by ad group"
+    query: |-
+      SELECT ad_group_id, SUM(clicks) AS total_clicks
+      FROM metrics_model
+      GROUP BY ad_group_id
+      ORDER BY total_clicks DESC
+    result: |-
+      ad_group_id,total_clicks
+      101,300
+      102,350
+
+  - description: "Total conversions by keyword"
+    query: |-
+      SELECT keyword_id, SUM(conversions) AS total_conversions
+      FROM metrics_model
+      GROUP BY keyword_id
+      ORDER BY total_conversions DESC
+    result: |-
+      keyword_id,total_conversions
+      "KW105",20
+      "KW104",18
+      "KW103",15
+      "KW102",12
+      "KW101",10
+

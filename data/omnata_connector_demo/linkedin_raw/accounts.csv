@@ -1,0 +1,2 @@
+ID,APP_IDENTIFIER,RECORD_DATA,RETRIEVE_DATE,IS_DELETED,RUN_ID
+0,0,"{'id': 0, 'name': 'Snowflake Sponsored Account', 'status': 'ACTIVE', 'currency': 'AUD', 'changeAuditStamps': {'created': {'time': '2020-11-30 06:01:52'}, 'lastModified': {'time': '2024-04-18 20:42:52.240'}}}",2024-04-26 03:41:58.077,False,8

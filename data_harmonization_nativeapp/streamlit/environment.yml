@@ -1,0 +1,11 @@
+name: snowmarketing
+channels:
+  - snowflake
+dependencies:
+  - python=3.8.12
+  - streamlit=1.26.0
+  - streamlit-extras
+  - snowflake-snowpark-python
+  - snowflake-native-apps-permission
+  - jsonpickle
+  - plotly=5.9.0

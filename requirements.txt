@@ -1,0 +1,6 @@
+snowflake-snowpark-python
+streamlit==1.26
+streamlit-extras==0.2.7
+jsonpickle
+plotly==5.9.0
+jupyter

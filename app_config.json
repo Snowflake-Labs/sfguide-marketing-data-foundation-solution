@@ -1,0 +1,18 @@
+{
+  "account_registry": "vwxmays-mobilize.registry.snowflakecomputing.com",
+  "dev_role": "DATA_HARMONIZATION_DEV",
+  "warehouse": "COMPUTE_WH",
+  "schema": "APP",
+  
+  "data_quality_database": "data_quality_notebooks",
+  "dynamic_table_warehouse": "DATA_HARMONIZATION_WH",
+
+  "spcs_database": "DATA_HARMONIZATION_CONTAINER",
+  "compute_pool": "DATA_HARMONIZATION_COMPUTE_POOL",
+  "container_service_name": "DATA_HARMONIZATION_SERVICE",
+  "container_repository": "IMAGE_REPOSITORY",
+  "image_name": "unified-marketing-model",
+  "image_version": "latest",
+
+  "nativeapp_stage": "CODE_STG"
+}
