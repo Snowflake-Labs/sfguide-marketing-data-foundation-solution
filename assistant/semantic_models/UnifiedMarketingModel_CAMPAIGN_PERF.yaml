@@ -3,7 +3,7 @@ tables:
   - name: CAMPAIGN_PERFORMANCE
     description: This dataset provides an overview of the performance of different campaigns, ad groups, and ads in the database. This semantic model appears to be based on the metrics, which contains detailed information about the performance of different campaigns, ad groups, and ads, including the number of clicks, conversions, impressions, and spend. We can check additional information about the ads, such as the ad type, name, and URL. We can also review this dataset to see information about the campaigns, such as the budget remaining, daily budget, and start and stop times. Overall, this semantic model is a useful starting point for analyzing the performance of different campaigns, ad groups, and ads in the database.
     base_table:
-      database: Snowflake_Marketing_Data_Cloud_mfigueroamontero
+      database: <target_database>
       schema: AGGREGATED_REPORTS
       table: CAMPAIGN_PERFORMANCE
     dimensions:
