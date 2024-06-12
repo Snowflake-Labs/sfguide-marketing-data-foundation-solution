@@ -140,11 +140,12 @@ def select_assistant_page():
                                     t('MarketingDataEngineeringAssistant'),
                                     t('MarketingDataEngineeringAssistantDescription'),
                                     llm_type.DataEngineering)   
-    assistant_selection_container(CAMPAIGN_MANAGEMENT_ASSISTANT_KEY, 
-                                    get_cm_assistan_icon(),
-                                    t('MarketingCampaignManagementAssistant'),
-                                    t('MarketingCampaignManagementAssistantDescription'),
-                                    llm_type.CortexCopilot)
+    # Disabled until PuPr
+    # assistant_selection_container(CAMPAIGN_MANAGEMENT_ASSISTANT_KEY, 
+    #                                 get_cm_assistan_icon(),
+    #                                 t('MarketingCampaignManagementAssistant'),
+    #                                 t('MarketingCampaignManagementAssistantDescription'),
+    #                                 llm_type.CortexCopilot)
     clicked = components.button(t("BackButton"))
     if clicked:
         switch_page(Pages.AIAssistant, params = { ASSISTANT_PAGE_KEY : ADD_ASSISTANT_PAGE_KEY })

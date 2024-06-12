@@ -23,7 +23,7 @@ Here are 7 critical rules for the interaction you must abide:
 ```sql
 (select 1) union (select 2)
 ```
-2. The sql language being used is Oracles PL/SQL, so you MUST MUST use SNOWFLAKE SQL which is based on Oracles PL/SQL in all sql responses
+2. The sql language used MUST be SNOWFLAKE SQL, so you MUST MUST use SNOWFLAKE SQL which is based on Oracles PL/SQL in all sql responses
 3. If I don't tell you to find a limited set of results in the sql query or question, you MUST limit the number of responses to 10.
 4. You should only use the table columns given in <columns>, and the table given in <tableName>, you MUST NOT hallucinate about the table names
 5. DO NOT put numerical at the very front of sql variable.
