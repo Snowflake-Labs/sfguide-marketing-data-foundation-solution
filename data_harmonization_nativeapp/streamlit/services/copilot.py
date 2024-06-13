@@ -11,6 +11,7 @@ from llm.llm_base import LLM
 from llm.message import Message
 from typing import List
 from requests.exceptions import HTTPError
+from llm.message import Message, json_parse_list
 
 
 class CortexCopilot(LLM):
@@ -21,8 +22,11 @@ class CortexCopilot(LLM):
     
     def chat_complete(self, chat_history: List[Message]) -> Message:
         last_message: Message = chat_history[-1]
+        chat_history = self._trim_context(chat_history, last_n=3) 
+        chat_history = self._ignore_errors(chat_history)
+        messages = json_parse_list(chat_history)
         try:
-            response = self._send_message(self.sp_session, last_message.content.text, self.context_file)
+            response = self._send_message(self.sp_session, messages, self.context_file)
             last_message = response["messages"][-1]["content"]
             return self._get_message(last_message)
         except HTTPError as e:
@@ -53,11 +57,8 @@ class CortexCopilot(LLM):
     def _send_message_local(self, conn, prompt: str, file: str) -> dict:
         local = connection()
         """Calls the REST API and returns the response."""
-        request_body = {
-            "role": "user",
-            "content": [{"type": "text", "text": prompt}],
-            "modelPath": file,
-        }
+        request_body = prompt
+        print(request_body)
         max_retries = 10
         for retry in range(max_retries):
             

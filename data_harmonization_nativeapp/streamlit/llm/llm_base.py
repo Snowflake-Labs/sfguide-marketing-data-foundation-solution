@@ -51,3 +51,13 @@ class LLM(ABC):
     def get_system_prompt(self, context_file: str) -> str:
         return None
     
+    def _trim_context(self, chat_history: List[Message], last_n: int) -> List[Message]:
+        system_prompt = chat_history[0] if chat_history[0].role == 'system' else []
+        last_n_messages = [system_prompt] + chat_history[1:][-last_n:] if system_prompt else chat_history[-last_n:]
+        return last_n_messages
+
+
+    def _ignore_errors(self, chat_history: List[Message]) -> List[Message]:
+        chat_history_filtered = list(filter(lambda m: m.error is None, chat_history))
+        return chat_history_filtered
+    
