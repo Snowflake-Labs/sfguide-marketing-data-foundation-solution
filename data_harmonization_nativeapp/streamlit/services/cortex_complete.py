@@ -47,17 +47,6 @@ class CortexComplete(LLM):
         return response
 
 
-    def _trim_context(self, chat_history: List[Message], last_n: int) -> List[Message]:
-        system_prompt = chat_history[0] if chat_history[0].role == 'system' else []
-        last_n_messages = [system_prompt] + chat_history[1:][-last_n:] if system_prompt else chat_history[-last_n:]
-        return last_n_messages
-
-
-    def _ignore_errors(self, chat_history: List[Message]) -> List[Message]:
-        chat_history_filtered = list(filter(lambda m: m.error is None, chat_history))
-        return chat_history_filtered
-
-
     def _process_message(self, content: str) -> Message:
         message = Message(role='assistant', text=content)
         message = self._process_message_suggestions(message)
