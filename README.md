@@ -1,5 +1,12 @@
-# Data Harmonization NativeApp
 
+
+
+# Marketing Data Foundation Native App
+
+This repository is the source code for the [Marketing Data Foundation V2 Quickstart](https://quickstarts.snowflake.com/guide/marketing_data_foundation_starter_v2/index.html). Please refer to the quickstart for all instructions.
+
+
+## Introduction
 The purpose of this application is to provide a framework to generate transformations and mapping rules that allow you to standardize and unify different data models into a known data-model that can be used to aggregate data and generate a single source of truth of your marketing campaing data.
 
 ## Setup
