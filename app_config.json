@@ -1,5 +1,5 @@
 {
-  "account_registry": "vwxmays-mobilize.registry.snowflakecomputing.com",
+  "account_registry": "<account_registry>",
   "dev_role": "DATA_HARMONIZATION_DEV",
   "warehouse": "COMPUTE_WH",
   "schema": "APP",
